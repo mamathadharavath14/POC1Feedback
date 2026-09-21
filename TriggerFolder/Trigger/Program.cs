@@ -13,6 +13,7 @@ builder.ConfigureFunctionsWebApplication();
 //builder.Services.ConfigureFunctionsApplicationInsights();
 
 builder.Services.AddSingleton<FeedbackService>();
+builder.Services.AddSingleton<BlobStorageService>();
 builder.Services.AddSingleton<FeedbackProcessService>();
 builder.Services.AddSingleton<EmailNotificationService>();
 
