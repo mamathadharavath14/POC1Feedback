@@ -43,9 +43,8 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1C04B584C5A84748BA80864B58EF4112 }}
 
       - name: Run Azure Functions Action
-        uses: Azure/functions-action@v
-         id: fa
-         with:
+        uses: Azure/functions-action@v1
+        with:
           app-name: 'Feedback-management'
           slot-name: 'Production'
           package: './TriggerFolder/Trigger/output'
