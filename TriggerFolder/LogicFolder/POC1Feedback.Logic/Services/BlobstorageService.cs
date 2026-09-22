@@ -10,16 +10,12 @@ public class BlobStorageService
 
     public BlobStorageService(IConfiguration configuration)
     {
-        var connectionString =
-            configuration["BlobStorageConnection"];
+        var connectionString = configuration["BlobStorageConnection"];
 
         BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
 
-        _containerClient =
-            blobServiceClient.GetBlobContainerClient(
-                "feedback-container");
+        _containerClient =blobServiceClient.GetBlobContainerClient("feedback-container");
     }
-
     public async Task UploadFeedbackAsync(string fileName, string content)
     {
         var blobClient = _containerClient.GetBlobClient(fileName);
