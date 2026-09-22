@@ -1,5 +1,4 @@
 # POC1Feedback
-# app password : lafg jaik aglm uatc
 #  "SmtpHost": "smtp.gmail.com", server
 #   "SmtpPort": "587",
 
