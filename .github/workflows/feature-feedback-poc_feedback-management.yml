@@ -1,9 +1,11 @@
-name: Build and deploy dotnet core project to Azure Function App - Feedback-management
+name: Build and Deploy Azure Function App
 
 on:
   push:
     branches:
       - feature-feedback-poc
+      - main
+
   workflow_dispatch:
 
 env:
@@ -19,21 +21,40 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout GitHub Action
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup DotNet
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Restore Dependencies
+        shell: bash
+        run: |
+          pushd '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet restore
+          popd
+
+      - name: Build Solution
+        shell: bash
+        run: |
+          pushd '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet build --configuration Release --no-restore
+          popd
+
       - name: Publish Azure Function
         shell: bash
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          dotnet restore
-          dotnet publish -c Release -o ./output
+          pushd '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet publish --configuration Release --output ./output
           popd
+
+      - name: Verify Publish Output
+        shell: bash
+        run: |
+          echo "Published files:"
+          find ./TriggerFolder/Trigger/output -type f
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -42,9 +63,9 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_64D4410BC38E4D94B65A36DA66E52582 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1C04B584C5A84748BA80864B58EF4112 }}
 
-      - name: Run Azure Functions Action
+      - name: Deploy Azure Function
         uses: Azure/functions-action@v1
         with:
           app-name: 'Feedback-management'
           slot-name: 'Production'
-          package: './TriggerFolder/output'
+          package: './TriggerFolder/Trigger/output'
